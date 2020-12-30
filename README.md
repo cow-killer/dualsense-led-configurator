@@ -14,7 +14,7 @@ The program is highly unstable depending on what button you press, in particular
 * Rainbow LED colors
 * Disco/Progress bar LED patterns
 
-Pressing any of those types of buttons (which have been labeled accordingly) will cause the program to loop indefinitely. You'll need to force exit the application through your system monitor or disconnect your DS in order to use the program again. Other tasks going on on your computer will still run regardless.
+Pressing any of those types of buttons (which have been labeled as unstable accordingly) will cause the program to loop indefinitely. You'll need to force exit the application through your system monitor or disconnect your DS in order to use the program again. Other tasks going on on your computer will still run regardless.
 
 ## How To Use
 1. Clone the repository, i.e. `git clone https://github.com/cow-killer/dualsense-led-configurator.git`
