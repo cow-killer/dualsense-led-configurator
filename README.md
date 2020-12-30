@@ -28,5 +28,6 @@ Pressing any of those types of buttons (which have been labeled accordingly) wil
 * Find a way to get rainbow LEDs, disco, etc. to work without hanging the application
 * Add a color picker
 * Add a way to extract MAC address without user interaction
+* Update UI if controller is plugged/unplugged and if the percentage of the battery has changed
 * Vibration tester?
 * Add a button to shut controller off instantly?
