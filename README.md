@@ -31,3 +31,5 @@ Pressing any of those types of buttons (which have been labeled accordingly) wil
 * Update UI if controller is plugged/unplugged and if the percentage of the battery has changed
 * Vibration tester?
 * Add a button to shut controller off instantly?
+
+Pull requests welcomed!
