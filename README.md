@@ -8,6 +8,7 @@ This program allows the user to adjust color and brightness to the various LEDs 
 * Access to root privileges (the program modifies the values found in `sys/class/leds/playstation::[mac_address]::[name_of_LED]/`)
 * Python 3
 * GTK 3
+* Tkinter
 
 ## What You Should Know
 The program is highly unstable depending on what button you press, in particular:
