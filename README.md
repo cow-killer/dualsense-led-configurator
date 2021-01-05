@@ -18,7 +18,8 @@ The program is highly unstable depending on what button you press, in particular
 Pressing any of those types of buttons (which have been labeled as unstable accordingly) will cause the program to loop indefinitely. You'll need to one of the following:
 * Press `Enter` in the terminal window to close the application
 * force exit the application through your system monitor 
-* disconnect your DS in order to use the program again. 
+* disconnect your DS in order
+
 Other tasks going on on your computer will still run regardless.
 
 ## How To Use
