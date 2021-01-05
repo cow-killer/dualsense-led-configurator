@@ -13,7 +13,7 @@ from tkinter import *
 import tkinter.colorchooser # need tkiner for now for color picker and RGB brightness
 
 # Define the MAC address for your DS here
-mac_address = "4c:b9:9b:1b:de:00"
+mac_address = "00:00:00:00:00:00"
 
 icon = "assets/icon.png"
 controller = "assets/pad.png"
