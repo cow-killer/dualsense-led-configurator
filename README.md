@@ -25,7 +25,7 @@ Other tasks going on on your computer will still run regardless.
 ## How To Use
 1. Clone the repository, i.e. `git clone https://github.com/cow-killer/dualsense-led-configurator.git`
 2. Plug your DS in or connect it via Bluetooth, then take note of its MAC address (can be found in `sys/class/leds/`)
-3. Open `ds_led.py` with a text editor, and fill in the MAC address in line 14
+3. Open `ds_led.py` with a text editor, and fill in the MAC address in line 16
 4. Save the file, then run the script as root: `sudo python ds_led.py`
 
 ## To-Do
