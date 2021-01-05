@@ -13,7 +13,7 @@ from tkinter import *
 import tkinter.colorchooser # need tkiner for now for color picker and RGB brightness
 
 # Define the MAC address for your DS here
-mac_address = "00:00:00:00:00:00"
+mac_address = "4c:b9:9b:1b:de:00"
 
 icon = "assets/icon.png"
 controller = "assets/pad.png"
@@ -171,15 +171,15 @@ class MainWindow(Gtk.Window):
 		led5.connect("clicked", self.led5_clicked)
 		grid.attach(led5, 4, 6, 1, 1)
 		
+		# Progress-bar like LED display
+		prog_bar = Gtk.Button(label="Progress Bar (UNSTABLE!)")
+		prog_bar.connect("clicked", self.prog_bar_clicked)
+		grid.attach(prog_bar, 1, 7, 1, 1)
+		
 		# Turn on/off all LEDs
 		all_leds = Gtk.Button(label="Opposite LEDs Toggle")
 		all_leds.connect("clicked", self.all_leds_clicked)
 		grid.attach(all_leds, 2, 7, 1, 1)
-		
-		# Progress-bar like LED display
-		prog_bar = Gtk.Button(label="Progress Bar (UNSTABLE!)")
-		prog_bar.connect("clicked", self.prog_bar_clicked)
-		grid.attach(prog_bar, 0, 7, 1, 1)
 		
 		# Random array of LEDs
 		disco_leds = Gtk.Button(label="Disco! (UNSTABLE!)")
