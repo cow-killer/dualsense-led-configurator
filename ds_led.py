@@ -152,23 +152,23 @@ class MainWindow(Gtk.Window):
 		grid.attach(pane1, 2, 5, 1, 1)
 
 		led1 = Gtk.Button(label="LED 1 Toggle")
-		led1.connect("clicked", self.led1_clicked)
+		led1.connect("clicked", self.led_clicked, 1)
 		grid.attach(led1, 0, 6, 1, 1)
 
 		led2 = Gtk.Button(label="LED 2 Toggle")
-		led2.connect("clicked", self.led2_clicked)
+		led2.connect("clicked", self.led_clicked, 2)
 		grid.attach(led2, 1, 6, 1, 1)
 
 		led3 = Gtk.Button(label="LED 3 Toggle")
-		led3.connect("clicked", self.led3_clicked)
+		led3.connect("clicked", self.led_clicked, 3)
 		grid.attach(led3, 2, 6, 1, 1)
 
 		led4 = Gtk.Button(label="LED 4 Toggle")
-		led4.connect("clicked", self.led4_clicked)
+		led4.connect("clicked", self.led_clicked, 4)
 		grid.attach(led4, 3, 6, 1, 1)
 
 		led5 = Gtk.Button(label="LED 5 Toggle")
-		led5.connect("clicked", self.led5_clicked)
+		led5.connect("clicked", self.led_clicked, 5)
 		grid.attach(led5, 4, 6, 1, 1)
 		
 		# Progress-bar like LED display
@@ -198,6 +198,23 @@ class MainWindow(Gtk.Window):
 
 		self.connect("destroy", Gtk.main_quit)
 		
+	def toggle_individual_led(self, led_num):
+		wr = open(f"/sys/class/leds/playstation::{mac_address}::led{led_num}/brightness", 'r+')
+		value = wr.readline().strip()
+		new_value = "1" if value == "0" else "0"
+		wr.write(new_value)
+		wr.close()
+
+	def enable_individual_led(self, led_num):
+		wr = open(f"/sys/class/leds/playstation::{mac_address}::led{led_num}/brightness", 'w')
+		wr.write("1")
+		wr.close()
+
+	def disable_individual_led(self, led_num):
+		wr = open(f"/sys/class/leds/playstation::{mac_address}::led{led_num}/brightness", 'w')
+		wr.write("0")
+		wr.close()
+
 	# Beginning of definitions
 	def open_color_picker(self, widget): # Color picker for side LEDs
 		win = tkinter.Tk()
@@ -319,105 +336,49 @@ class MainWindow(Gtk.Window):
 		tkinter.Button(slider, text="Cancel", command=cancel).pack()
 		slider.mainloop()
 		
-	# Definitions for turning individual LEDs on/off
-	def led1_clicked(self, widget):
-		wr = open("/sys/class/leds/playstation::" + mac_address + "::led1/brightness", 'r+')
-		value = wr.readline().strip()
-		new_value = "1" if value == "0" else "0"
-		wr.write(new_value)
-		wr.close()
-		
-	def led2_clicked(self, widget):
-		wr = open("/sys/class/leds/playstation::" + mac_address + "::led2/brightness", 'r+')
-		value = wr.readline().strip()
-		new_value = "1" if value == "0" else "0"
-		wr.write(new_value)
-		wr.close()
-		
-	def led3_clicked(self, widget):
-		wr = open("/sys/class/leds/playstation::" + mac_address + "::led3/brightness", 'r+')
-		value = wr.readline().strip()
-		new_value = "1" if value == "0" else "0"
-		wr.write(new_value)
-		wr.close()
-
-	def led4_clicked(self, widget):
-		wr = open("/sys/class/leds/playstation::" + mac_address + "::led4/brightness", 'r+')
-		value = wr.readline().strip()
-		new_value = "1" if value == "0" else "0"
-		wr.write(new_value)
-		wr.close()
-		
-	def led5_clicked(self, widget):
-		wr = open("/sys/class/leds/playstation::" + mac_address + "::led5/brightness", 'r+')
-		value = wr.readline().strip()
-		new_value = "1" if value == "0" else "0"
-		wr.write(new_value)
-		wr.close()
-		
+	# Definition for turning individual LEDs on/off
+	def led_clicked(self, widget, *data):
+		self.toggle_individual_led(data[0])
 	
 	# All LEDs ON/OFF
 	def all_leds_clicked(self, widget):
-		led_number = 1
-		while led_number <= 5:
-			wr = open("/sys/class/leds/playstation::" + mac_address + "::led" + str(led_number) + "/brightness", 'r+')
-			value = wr.readline().strip()
-			new_value = "1" if value == "0" else "0"
-			wr.write(new_value)
-			wr.close()
-			led_number += 1
-			
+		for i in range(1,6):
+			self.toggle_individual_led(i)
+
 	# Progress bar LEDs
 	def prog_bar_clicked(self, widget):
 		print("Running progress bar, press Enter any time to stop -> ")
 		while True:
 			# Turn off all the LEDs before proceeding
-			led_number = 1
-			while led_number <= 5:
-				wr = open("/sys/class/leds/playstation::" + mac_address + "::led" + str(led_number) + "/brightness", 'r+')
-				wr.write("0")
-				wr.close()
-				led_number += 1
+			for i in range(1,6):
+				self.disable_individual_led(i)
 				
 			# Commence the cycle
-			led_number = 1
-			while led_number <= 5:
-				wr = open("/sys/class/leds/playstation::" + mac_address + "::led" + str(led_number) + "/brightness", 'r+')
-				wr.write("1")
-				wr.close()
-				led_number += 1
+			for i in range(1,6):
+				self.enable_individual_led(i)
 				time.sleep(0.5)
+
 			if sys.stdin in select.select([sys.stdin], [], [], 0)[0]: # exit if Enter is pressed
 				print("Exiting...")
-				wr.close()
 				sys.exit()
-	
+
 	# Disco LEDs
 	def disco_leds_clicked(self, widget):
 		print("Running disco, press Enter any time to exit -> ")
 		# Turn off all the LEDs before proceeding
-		led_number = 1
-		while led_number <= 5:
-			wr = open("/sys/class/leds/playstation::" + mac_address + "::led" + str(led_number) + "/brightness", 'r+')
-			wr.write("0")
-			wr.close()
-			led_number += 1
-			
+		for i in range(1,6):
+			self.disable_individual_led(i)
+
 		# Commence the cycle
 		while True:
 			random_led = random.randint(1, 5)
-			wr = open("/sys/class/leds/playstation::" + mac_address + "::led" + str(random_led) + "/brightness", 'r+')
-			value = wr.readline().strip()
-			new_value = "1" if value == "0" else "0"
-			wr.write(new_value)
-			wr.close()
+			self.toggle_individual_led(random_led)
 			time.sleep(0.3)
 			
 			if sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
 				print("Exiting...")
-				wr.close()
 				sys.exit()
-	
+
 	# About box	
 	def about_button_clicked(self, widget):
 		dialog = AboutBox(self)
