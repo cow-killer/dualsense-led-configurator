@@ -1,4 +1,4 @@
-# DualSense LED Configurator 0.2
+# DualSense LED Configurator 0.3
 # © 2021 cow_killer
 
 import gi
@@ -22,11 +22,12 @@ full_battery = "assets/full_battery.png"
 medium_battery = "assets/medium_battery.png"
 low_battery = "assets/low_battery.png"
 
+version_number = "0.3"
+
 # check to see if user has root privileges, if not exit
 if os.geteuid() != 0:
     print("ERROR: You need to run this program as root in order to modify the LEDs.")
     sys.exit()
-
 
 class AboutBox(Gtk.Dialog):
     def __init__(self, parent):
@@ -35,7 +36,7 @@ class AboutBox(Gtk.Dialog):
         self.set_border_width(15)
 
         version = Gtk.Label()
-        version.set_markup("<big><b>DualSense LED Configurator 0.2</b></big>")
+        version.set_markup("<big><b>DualSense LED Configurator " + version_number + "</b></big>")
         author = Gtk.Label()
         author.set_markup("<big><b>© 2021 cow_killer</b></big>\n")
         source = Gtk.Label()
@@ -45,7 +46,7 @@ class AboutBox(Gtk.Dialog):
 
         credits_label = Gtk.Label()
         credits_label.set_markup(
-            "Icon image by Martial Red\nDS image by Khairuman\nBattery icons by nadeem\n"
+            "Icon image by Martial Red\nDS image by Khairuman\nBattery icons by nadeem\nCode cleanup by thats-the-joke"
         )
 
         box = self.get_content_area()
@@ -54,7 +55,6 @@ class AboutBox(Gtk.Dialog):
         box.add(warning)
         box.add(credits_label)
         self.show_all()
-
 
 class MainWindow(Gtk.Window):
     def __init__(self):
