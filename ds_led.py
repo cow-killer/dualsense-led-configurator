@@ -420,7 +420,7 @@ class MainWindow(Gtk.Window):
 
     # Progress bar LEDs
     def prog_bar_clicked(self, widget):
-        print("Running progress bar, press Enter any time to stop -> ")
+        print("Running progress bar, press Enter any time to stop ->")
         while True:
             # Turn off all the LEDs before proceeding
             for i in range(1, 6):
@@ -431,15 +431,15 @@ class MainWindow(Gtk.Window):
                 self.enable_individual_led(i)
                 time.sleep(0.5)
 
-            if (
-                sys.stdin in select.select([sys.stdin], [], [], 0)[0]
-            ):  # exit if Enter is pressed
-                print("Exiting...")
-                sys.exit()
+            # break if Enter is pressed
+            if sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
+                input()
+                print("Stopping...")
+                break
 
     # Disco LEDs
     def disco_leds_clicked(self, widget):
-        print("Running disco, press Enter any time to exit -> ")
+        print("Running disco, press Enter any time to stop ->")
         # Turn off all the LEDs before proceeding
         for i in range(1, 6):
             self.disable_individual_led(i)
@@ -450,9 +450,11 @@ class MainWindow(Gtk.Window):
             self.toggle_individual_led(random_led)
             time.sleep(0.3)
 
+            # break if Enter is pressed
             if sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
-                print("Exiting...")
-                sys.exit()
+                input()
+                print("Stopping...")
+                break
 
     # About box
     def about_button_clicked(self, widget):
