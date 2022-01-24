@@ -4,8 +4,7 @@ This program allows the user to adjust color and brightness to the various LEDs 
 
 ## Prerequisites (besides your DS, obviously)
 * Linux-based operating system
-* Sony's official driver for the DualSense, available in the [AUR](https://aur.archlinux.org/packages/hid-playstation-dkms). As it's not in the kernel yet, you'll need to otherwise download the [patches](https://patchwork.kernel.org/project/linux-input/list/?series=404369) and compile the kernel
-* Access to root privileges (the program modifies the values found in `sys/class/leds/playstation::[mac_address]::[name_of_LED]/`)
+* Access to root privileges (the program modifies the values found in `/sys/devices`)
 * Python 3
 * GTK 3
 * Tkinter
@@ -24,9 +23,7 @@ Other tasks going on on your computer will still run regardless.
 
 ## How To Use
 1. Clone the repository, i.e. `git clone https://github.com/cow-killer/dualsense-led-configurator.git`
-2. Plug your DS in or connect it via Bluetooth, then take note of its MAC address (can be found in `sys/class/leds/`)
-3. Open `ds_led.py` with a text editor, and fill in the MAC address at or somewhere near line 16
-4. Save the file, then run the script as root: `sudo python ds_led.py`
+2. Run the script as root: `sudo python ds_led.py`
 
 ## To-Do
 * ~~Code is a mess, more than likely a way to reduce the amount of code needed~~ Thanks thats-the-joke!
