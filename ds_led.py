@@ -11,9 +11,18 @@ import sys  # for exiting the application if there is an error
 import os  # detects if program is being run as root
 import select
 import tkinter.colorchooser  # need tkiner for now for color picker and RGB brightness
+import subprocess
 
-# Define the MAC address for your DS here
-mac_address = "00:00:00:00:00:00"
+device_path = subprocess.check_output(["find", "/sys/devices/","-name","ps-controller-battery*"])
+mac_address = device_path.decode().split("/")[-1].split("-")[-1].strip()
+device_path = "/".join(device_path.decode().split("/")[0:10])
+
+input_num = subprocess.check_output(["find", "/sys/devices/", "-name", "input??:white:player-1"])
+input_num = input_num.decode().split("/")[-1][5:7]
+
+battery_path = f"{device_path}/power_supply/ps-controller-battery-{mac_address}"
+player_leds_path = f"{device_path}/leds/input{input_num}:white:player"
+rgb_leds_path = f"{device_path}/leds/input{input_num}:rgb:indicator"
 
 icon = "assets/icon.png"
 controller = "assets/pad.png"
@@ -82,14 +91,10 @@ class MainWindow(Gtk.Window):
         # Get battery percentage. Display error if file is not available and exit
         try:
             f = open(
-                "/sys/class/power_supply/ps-controller-battery-"
-                + mac_address
-                + "/capacity"
+                f"{battery_path}/capacity"
             )
             status_file = open(
-                "/sys/class/power_supply/ps-controller-battery-"
-                + mac_address
-                + "/status"
+                f"{battery_path}/status"
             )
         except FileNotFoundError:
             print(
@@ -221,7 +226,7 @@ class MainWindow(Gtk.Window):
 
     def toggle_individual_led(self, led_num):
         wr = open(
-            f"/sys/class/leds/playstation::{mac_address}::led{led_num}/brightness", "r+"
+            f"{player_leds_path}-{led_num}/brightness", "r+"
         )
         value = wr.readline().strip()
         new_value = "1" if value == "0" else "0"
@@ -230,14 +235,14 @@ class MainWindow(Gtk.Window):
 
     def enable_individual_led(self, led_num):
         wr = open(
-            f"/sys/class/leds/playstation::{mac_address}::led{led_num}/brightness", "w"
+            f"{player_leds_path}-{led_num}/brightness", "w"
         )
         wr.write("1")
         wr.close()
 
     def disable_individual_led(self, led_num):
         wr = open(
-            f"/sys/class/leds/playstation::{mac_address}::led{led_num}/brightness", "w"
+            f"{player_leds_path}-{led_num}/brightness", "w"
         )
         wr.write("0")
         wr.close()
@@ -259,7 +264,7 @@ class MainWindow(Gtk.Window):
         else:
             # Write the RGB value to 'multi-intensity'
             wr = open(
-                "/sys/class/leds/playstation::" + mac_address + "::rgb/multi_intensity",
+                f"{rgb_leds_path}/multi_intensity",
                 "r+",
             )
             wr.write(str(red) + " " + str(green) + " " + str(blue))
@@ -269,13 +274,13 @@ class MainWindow(Gtk.Window):
 
     def rgb_random_clicked(self, widget):
         wr = open(
-            "/sys/class/leds/playstation::" + mac_address + "::rgb/multi_intensity",
+            f"{rgb_leds_path}/multi_intensity",
             "r+",
         )
         random_red = random.randint(1, 255)
         random_green = random.randint(1, 255)
         random_blue = random.randint(1, 255)
-        wr.write(str(random_red) + " " + str(random_green) + " " + str(random_blue))
+        wr.write(f"{random_red} {random_green} {random_blue}")
         wr.close()
         print(
             "RGB set to "
@@ -291,7 +296,7 @@ class MainWindow(Gtk.Window):
 
         # Set RGB to 0 0 0 before we begin
         wr = open(
-            "/sys/class/leds/playstation::" + mac_address + "::rgb/multi_intensity",
+            f"{rgb_leds_path}/multi_intensity",
             "r+",
         )
         wr.write("0 0 0")
@@ -310,11 +315,9 @@ class MainWindow(Gtk.Window):
             random_blue_increment = random.randint(1, 10)
             while (
                 red <= max_rgb and green <= max_rgb and blue <= max_rgb
-            ):  # slowly glow brighter
+            ):  # slowly glomonorepo% w brighter
                 wr = open(
-                    "/sys/class/leds/playstation::"
-                    + mac_address
-                    + "::rgb/multi_intensity",
+                    f"{rgb_leds_path}/multi_intensity",
                     "r+",
                 )
                 wr.write(str(red) + " " + str(green) + " " + str(blue))
@@ -324,9 +327,7 @@ class MainWindow(Gtk.Window):
                 blue += random_blue_increment
             while red > min_rgb and green > min_rgb and blue > min_rgb:  # die down
                 wr = open(
-                    "/sys/class/leds/playstation::"
-                    + mac_address
-                    + "::rgb/multi_intensity",
+                    f"{rgb_leds_path}/multi_intensity",
                     "r+",
                 )
                 time.sleep(0.05)
@@ -345,7 +346,7 @@ class MainWindow(Gtk.Window):
     def no_brightness_clicked(self, widget):
         brightness_off = 0
         wr = open(
-            "/sys/class/leds/playstation::" + mac_address + "::rgb/brightness", "r+"
+            f"{rgb_leds_path}/brightness", "r+"
         )
         wr.write(str(brightness_off))
         wr.close()
@@ -354,7 +355,7 @@ class MainWindow(Gtk.Window):
     def low_brightness_clicked(self, widget):
         low_brightness_value = 85
         wr = open(
-            "/sys/class/leds/playstation::" + mac_address + "::rgb/brightness", "r+"
+            f"{rgb_leds_path}/brightness", "r+"
         )
         wr.write(str(low_brightness_value))
         wr.close()
@@ -363,7 +364,7 @@ class MainWindow(Gtk.Window):
     def medium_brightness_clicked(self, widget):
         med_brightness_value = 170
         wr = open(
-            "/sys/class/leds/playstation::" + mac_address + "::rgb/brightness", "r+"
+            f"{rgb_leds_path}/brightness", "r+"
         )
         wr.write(str(med_brightness_value))
         wr.close()
@@ -372,7 +373,7 @@ class MainWindow(Gtk.Window):
     def max_brightness_clicked(self, widget):
         max_brightness_value = 255
         wr = open(
-            "/sys/class/leds/playstation::" + mac_address + "::rgb/brightness", "r+"
+            f"{rgb_leds_path}/brightness", "r+"
         )
         wr.write(str(max_brightness_value))
         wr.close()
@@ -381,7 +382,7 @@ class MainWindow(Gtk.Window):
     def choose_brightness_clicked(self, widget):
         def set_value():
             wr = open(
-                "/sys/class/leds/playstation::" + mac_address + "::rgb/brightness", "r+"
+                f"{rgb_leds_path}/brightness", "r+"
             )
             wr.write(str(brightness.get()))
             wr.close()
@@ -398,7 +399,7 @@ class MainWindow(Gtk.Window):
 
         # Retrieve brightness value from file and set this as the default in the slider
         wr = open(
-            "/sys/class/leds/playstation::" + mac_address + "::rgb/brightness", "r+"
+            f"{rgb_leds_path}/brightness", "r+"
         )
         value = wr.readline().strip()
 
