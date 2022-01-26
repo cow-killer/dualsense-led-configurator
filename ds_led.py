@@ -13,13 +13,18 @@ import select
 import tkinter.colorchooser  # need tkiner for now for color picker and RGB brightness
 import subprocess
 
+# find the path to the ps-controller-battery directory
 device_path = subprocess.check_output(["find", "/sys/devices/","-name","ps-controller-battery*"])
+# extract the MAC address from the filepath
 mac_address = device_path.decode().split("/")[-1].split("-")[-1].strip()
-device_path = "/".join(device_path.decode().split("/")[0:10])
+# extract the main controller directory
+device_path = "/".join(device_path.decode().split("/")[0:-2])
 
+# get the random two-digit number assigned to the contoller
 input_num = subprocess.check_output(["find", "/sys/devices/", "-name", "input??:white:player-1"])
 input_num = input_num.decode().split("/")[-1][5:7]
 
+# create useful variables for other controller subsystems
 battery_path = f"{device_path}/power_supply/ps-controller-battery-{mac_address}"
 player_leds_path = f"{device_path}/leds/input{input_num}:white:player"
 rgb_leds_path = f"{device_path}/leds/input{input_num}:rgb:indicator"
