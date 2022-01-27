@@ -4,7 +4,7 @@ This program allows the user to adjust color and brightness to the various LEDs 
 
 ## Prerequisites (besides your DS, obviously)
 * Linux-based operating system with kernel 5.12 or later
-* Access to root privileges (the program modifies the values found in `/sys/devices/pci0000:00/(long string followed by a bunch of folders/`)
+* Access to root privileges (the program modifies the values found in `/sys/devices/pci0000:00/(long string followed by a bunch of folders)/`)
 * Python 3
 * GTK 3
 * Tkinter
