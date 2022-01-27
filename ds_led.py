@@ -1,8 +1,7 @@
-# DualSense LED Configurator 0.3
-# © 2021 cow_killer
+# DualSense LED Configurator 0.4
+# © 2021, 2022 cow_killer, thats-the-joke, ivanbratovic
 
 import gi
-
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, GLib  # for GUI
 import random  # for random RGB colors
@@ -20,7 +19,7 @@ mac_address = device_path.decode().split("/")[-1].split("-")[-1].strip()
 # extract the main controller directory
 device_path = "/".join(device_path.decode().split("/")[0:-2])
 
-# get the random number assigned to the contoller
+# get the random number assigned to the controller
 input_num = subprocess.check_output(["find", "/sys/devices/", "-name", "input*:white:player-1"])
 input_num = input_num.decode().split("/")[-1].split(":")[0][5:]
 
@@ -36,7 +35,7 @@ full_battery = "assets/full_battery.png"
 medium_battery = "assets/medium_battery.png"
 low_battery = "assets/low_battery.png"
 
-version_number = "0.3"
+version_number = "0.4"
 
 # check to see if user has root privileges, if not exit
 if os.geteuid() != 0:
@@ -52,7 +51,7 @@ class AboutBox(Gtk.Dialog):
         version = Gtk.Label()
         version.set_markup("<big><b>DualSense LED Configurator " + version_number + "</b></big>")
         author = Gtk.Label()
-        author.set_markup("<big><b>© 2021 cow_killer</b></big>\n")
+        author.set_markup("<big><b>© 2021, 2022 cow_killer</b></big>\n")
         source = Gtk.Label()
 
         warning = Gtk.Label()
@@ -60,7 +59,7 @@ class AboutBox(Gtk.Dialog):
 
         credits_label = Gtk.Label()
         credits_label.set_markup(
-            "Icon image by Martial Red\nDS image by Khairuman\nBattery icons by nadeem\nCode cleanup by thats-the-joke"
+            "Icon image by Martial Red\nDS image by Khairuman\nBattery icons by nadeem\nSpecial thanks to thats-the-joke and ivanbratovic for PRs\n"
         )
 
         box = self.get_content_area()
@@ -111,7 +110,7 @@ class MainWindow(Gtk.Window):
             status = status_file.readline().strip()
             if status == "Charging":
                 battery_label.set_markup(
-                    "Battery: <b>" + battery_percentage_left + "percent, charging</b>"
+                    "Battery: <b>" + battery_percentage_left + " percent, charging</b>"
                 )
                 battery_icon.set_from_file(charging_battery)
             elif status == "Full":
@@ -252,7 +251,6 @@ class MainWindow(Gtk.Window):
         wr.write("0")
         wr.close()
 
-    # Beginning of definitions
     def open_color_picker(self, widget):  # Color picker for side LEDs
         win = tkinter.Tk()
         win.title(string="Choose Color")
@@ -320,7 +318,7 @@ class MainWindow(Gtk.Window):
             random_blue_increment = random.randint(1, 10)
             while (
                 red <= max_rgb and green <= max_rgb and blue <= max_rgb
-            ):  # slowly glomonorepo% w brighter
+            ):  # slowly glow brighter
                 wr = open(
                     f"{rgb_leds_path}/multi_intensity",
                     "r+",
@@ -426,7 +424,7 @@ class MainWindow(Gtk.Window):
 
     # Progress bar LEDs
     def prog_bar_clicked(self, widget):
-        print("Running progress bar, press Enter any time to stop ->")
+        print("Running progress bar, press Enter any time to stop -> ")
         while True:
             # Turn off all the LEDs before proceeding
             for i in range(1, 6):
@@ -445,7 +443,7 @@ class MainWindow(Gtk.Window):
 
     # Disco LEDs
     def disco_leds_clicked(self, widget):
-        print("Running disco, press Enter any time to stop ->")
+        print("Running disco, press Enter any time to stop -> ")
         # Turn off all the LEDs before proceeding
         for i in range(1, 6):
             self.disable_individual_led(i)
