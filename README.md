@@ -14,7 +14,7 @@ The program is highly unstable depending on what button you press, in particular
 * Rainbow LED colors
 * Disco/Progress bar LED patterns
 
-Clicking any of those buttons (which have been labeled as unstable accordingly) will cause the program to loop indefinitely. You'll need to one of the following:
+Clicking any of those buttons (which have been labeled as unstable accordingly) will cause the program to loop indefinitely. You'll need to do one of the following:
 * Press `Enter` in the terminal window to either close the application or keep it from looping
 * force exit the application through your system monitor 
 * disconnect your DS
