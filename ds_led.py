@@ -20,9 +20,9 @@ mac_address = device_path.decode().split("/")[-1].split("-")[-1].strip()
 # extract the main controller directory
 device_path = "/".join(device_path.decode().split("/")[0:-2])
 
-# get the random two-digit number assigned to the contoller
-input_num = subprocess.check_output(["find", "/sys/devices/", "-name", "input??:white:player-1"])
-input_num = input_num.decode().split("/")[-1][5:7]
+# get the random number assigned to the contoller
+input_num = subprocess.check_output(["find", "/sys/devices/", "-name", "input*:white:player-1"])
+input_num = input_num.decode().split("/")[-1].split(":")[0][5:]
 
 # create useful variables for other controller subsystems
 battery_path = f"{device_path}/power_supply/ps-controller-battery-{mac_address}"
