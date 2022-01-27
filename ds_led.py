@@ -11,7 +11,7 @@ import sys  # for exiting the application if there is an error
 import os  # detects if program is being run as root
 import select
 import tkinter.colorchooser  # need tkiner for now for color picker and RGB brightness
-import subprocess
+import subprocess  # for running Linux commands
 
 # find the path to the ps-controller-battery directory
 device_path = subprocess.check_output(["find", "/sys/devices/","-name","ps-controller-battery*"])
@@ -103,7 +103,7 @@ class MainWindow(Gtk.Window):
             )
         except FileNotFoundError:
             print(
-                "ERROR: You either entered the wrong MAC address or your device is not connected."
+                "ERROR: Your controller can't be detected."
             )
             sys.exit()
         else:
