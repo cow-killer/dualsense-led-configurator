@@ -229,27 +229,18 @@ class MainWindow(Gtk.Window):
         self.connect("destroy", Gtk.main_quit)
 
     def toggle_individual_led(self, led_num):
-        wr = open(
-            f"{player_leds_path}-{led_num}/brightness", "r+"
-        )
-        value = wr.readline().strip()
-        new_value = "1" if value == "0" else "0"
-        wr.write(new_value)
-        wr.close()
+        with open(f"{player_leds_path}-{led_num}/brightness", "r+") as wr:
+            value = wr.readline().strip()
+            new_value = "1" if value == "0" else "0"
+            wr.write(new_value)
 
     def enable_individual_led(self, led_num):
-        wr = open(
-            f"{player_leds_path}-{led_num}/brightness", "w"
-        )
-        wr.write("1")
-        wr.close()
+        with open(f"{player_leds_path}-{led_num}/brightness", "w") as wr:
+            wr.write("1")
 
     def disable_individual_led(self, led_num):
-        wr = open(
-            f"{player_leds_path}-{led_num}/brightness", "w"
-        )
-        wr.write("0")
-        wr.close()
+        with open(f"{player_leds_path}-{led_num}/brightness", "w") as wr:
+            wr.write("0")
 
     def open_color_picker(self, widget):  # Color picker for side LEDs
         win = tkinter.Tk()
@@ -266,25 +257,23 @@ class MainWindow(Gtk.Window):
             win.destroy()
         else:
             # Write the RGB value to 'multi-intensity'
-            wr = open(
+            with open(
                 f"{rgb_leds_path}/multi_intensity",
                 "r+",
-            )
-            wr.write(str(red) + " " + str(green) + " " + str(blue))
-            wr.close()
+            ) as wr:
+                wr.write(str(red) + " " + str(green) + " " + str(blue))
             print("RGB set to " + str(red) + " " + str(green) + " " + str(blue))
             win.destroy()
 
     def rgb_random_clicked(self, widget):
-        wr = open(
-            f"{rgb_leds_path}/multi_intensity",
-            "r+",
-        )
         random_red = random.randint(1, 255)
         random_green = random.randint(1, 255)
         random_blue = random.randint(1, 255)
-        wr.write(f"{random_red} {random_green} {random_blue}")
-        wr.close()
+        with open(
+            f"{rgb_leds_path}/multi_intensity",
+            "r+",
+        ) as wr:
+            wr.write(f"{random_red} {random_green} {random_blue}")
         print(
             "RGB set to "
             + str(random_red)
@@ -298,12 +287,11 @@ class MainWindow(Gtk.Window):
         print("Running rainbow, press Enter any time to exit -> ")
 
         # Set RGB to 0 0 0 before we begin
-        wr = open(
+        with open(
             f"{rgb_leds_path}/multi_intensity",
             "r+",
-        )
-        wr.write("0 0 0")
-        wr.close()
+        ) as wr:
+            wr.write("0 0 0")
         max_rgb = 255
         min_rgb = 0
 
@@ -319,81 +307,64 @@ class MainWindow(Gtk.Window):
             while (
                 red <= max_rgb and green <= max_rgb and blue <= max_rgb
             ):  # slowly glow brighter
-                wr = open(
-                    f"{rgb_leds_path}/multi_intensity",
-                    "r+",
-                )
-                wr.write(str(red) + " " + str(green) + " " + str(blue))
                 time.sleep(0.05)
                 red += random_red_increment
                 green += random_green_increment
                 blue += random_blue_increment
-            while red > min_rgb and green > min_rgb and blue > min_rgb:  # die down
-                wr = open(
+                with open(
                     f"{rgb_leds_path}/multi_intensity",
                     "r+",
-                )
+                ) as wr:
+                    wr.write(str(red) + " " + str(green) + " " + str(blue))
+            while red > min_rgb and green > min_rgb and blue > min_rgb:  # die down
                 time.sleep(0.05)
                 red -= random_red_increment
                 green -= random_green_increment
                 blue -= random_blue_increment
-                wr.write(str(red) + " " + str(green) + " " + str(blue))
+                with open(
+                    f"{rgb_leds_path}/multi_intensity",
+                    "r+",
+                ) as wr:
+                    wr.write(str(red) + " " + str(green) + " " + str(blue))
             if (
                 sys.stdin in select.select([sys.stdin], [], [], 0)[0]
             ):  # exit if Enter is pressed
                 print("Exiting...")
-                wr.close()
                 sys.exit()
 
     # Side LED brightness
     def no_brightness_clicked(self, widget):
         brightness_off = 0
-        wr = open(
-            f"{rgb_leds_path}/brightness", "r+"
-        )
-        wr.write(str(brightness_off))
-        wr.close()
+        with open(f"{rgb_leds_path}/brightness", "r+") as wr:
+            wr.write(str(brightness_off))
         print("Brightness set to " + str(brightness_off))
 
     def low_brightness_clicked(self, widget):
         low_brightness_value = 85
-        wr = open(
-            f"{rgb_leds_path}/brightness", "r+"
-        )
-        wr.write(str(low_brightness_value))
-        wr.close()
+        with open(f"{rgb_leds_path}/brightness", "r+") as wr:
+            wr.write(str(low_brightness_value))
         print("Brightness set to " + str(low_brightness_value))
 
     def medium_brightness_clicked(self, widget):
         med_brightness_value = 170
-        wr = open(
-            f"{rgb_leds_path}/brightness", "r+"
-        )
-        wr.write(str(med_brightness_value))
-        wr.close()
+        with open(f"{rgb_leds_path}/brightness", "r+") as wr:
+            wr.write(str(med_brightness_value))
         print("Brightness set to " + str(med_brightness_value))
 
     def max_brightness_clicked(self, widget):
         max_brightness_value = 255
-        wr = open(
-            f"{rgb_leds_path}/brightness", "r+"
-        )
-        wr.write(str(max_brightness_value))
-        wr.close()
+        with open(f"{rgb_leds_path}/brightness", "r+") as wr:
+            wr.write(str(max_brightness_value))
         print("Brightness set to " + str(max_brightness_value))
 
     def choose_brightness_clicked(self, widget):
         def set_value():
-            wr = open(
-                f"{rgb_leds_path}/brightness", "r+"
-            )
-            wr.write(str(brightness.get()))
-            wr.close()
+            with open(f"{rgb_leds_path}/brightness", "r+") as wr:
+                wr.write(str(brightness.get()))
             print("Brightness set to " + str(brightness.get()))
             slider.destroy()
 
         def cancel():
-            wr.close()
             slider.destroy()
 
         slider = tkinter.Tk()
@@ -401,10 +372,8 @@ class MainWindow(Gtk.Window):
         slider.geometry("300x100")
 
         # Retrieve brightness value from file and set this as the default in the slider
-        wr = open(
-            f"{rgb_leds_path}/brightness", "r+"
-        )
-        value = wr.readline().strip()
+        with open(f"{rgb_leds_path}/brightness", "r+") as wr:
+            value = wr.readline().strip()
 
         brightness = tkinter.Scale(slider, from_=0, to=255, orient=tkinter.HORIZONTAL)
         brightness.set(value)
