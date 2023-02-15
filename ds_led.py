@@ -2,6 +2,7 @@
 # © 2021, 2022 cow_killer, thats-the-joke, ivanbratovic
 
 import gi
+
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, GLib  # for GUI
 import random  # for random RGB colors
@@ -13,14 +14,18 @@ import tkinter.colorchooser  # need tkiner for now for color picker and RGB brig
 import subprocess  # for running Linux commands
 
 # find the path to the ps-controller-battery directory
-device_path = subprocess.check_output(["find", "/sys/devices/","-name","ps-controller-battery*"])
+device_path = subprocess.check_output(
+    ["find", "/sys/devices/", "-name", "ps-controller-battery*"]
+)
 # extract the MAC address from the filepath
 mac_address = device_path.decode().split("/")[-1].split("-")[-1].strip()
 # extract the main controller directory
 device_path = "/".join(device_path.decode().split("/")[0:-2])
 
 # get the random number assigned to the controller
-input_num = subprocess.check_output(["find", "/sys/devices/", "-name", "input*:white:player-1"])
+input_num = subprocess.check_output(
+    ["find", "/sys/devices/", "-name", "input*:white:player-1"]
+)
 input_num = input_num.decode().split("/")[-1].split(":")[0][5:]
 
 # create useful variables for other controller subsystems
@@ -42,6 +47,7 @@ if os.geteuid() != 0:
     print("ERROR: You need to run this program as root in order to modify the LEDs.")
     sys.exit()
 
+
 class AboutBox(Gtk.Dialog):
     def __init__(self, parent):
         Gtk.Dialog.__init__(self, title="About", transient_for=parent, flags=0)
@@ -49,7 +55,9 @@ class AboutBox(Gtk.Dialog):
         self.set_border_width(15)
 
         version = Gtk.Label()
-        version.set_markup("<big><b>DualSense LED Configurator " + version_number + "</b></big>")
+        version.set_markup(
+            f"<big><b>DualSense LED Configurator {version_number}</b></big>"
+        )
         author = Gtk.Label()
         author.set_markup("<big><b>© 2021, 2022 cow_killer</b></big>\n")
         source = Gtk.Label()
@@ -68,6 +76,7 @@ class AboutBox(Gtk.Dialog):
         box.add(warning)
         box.add(credits_label)
         self.show_all()
+
 
 class MainWindow(Gtk.Window):
     def __init__(self):
@@ -94,23 +103,17 @@ class MainWindow(Gtk.Window):
 
         # Get battery percentage. Display error if file is not available and exit
         try:
-            f = open(
-                f"{battery_path}/capacity"
-            )
-            status_file = open(
-                f"{battery_path}/status"
-            )
+            f = open(f"{battery_path}/capacity")
+            status_file = open(f"{battery_path}/status")
         except FileNotFoundError:
-            print(
-                "ERROR: Your controller can't be detected."
-            )
+            print("ERROR: Your controller can't be detected.")
             sys.exit()
         else:
             battery_percentage_left = f.readline().strip()
             status = status_file.readline().strip()
             if status == "Charging":
                 battery_label.set_markup(
-                    "Battery: <b>" + battery_percentage_left + " percent, charging</b>"
+                    f"Battery: <b> {battery_percentage_left} percent, charging</b>"
                 )
                 battery_icon.set_from_file(charging_battery)
             elif status == "Full":
@@ -118,7 +121,7 @@ class MainWindow(Gtk.Window):
                 battery_icon.set_from_file(full_battery)
             else:
                 battery_label.set_markup(
-                    "Battery: <b>" + battery_percentage_left + " percent</b>"
+                    f"Battery: <b> {battery_percentage_left} percent</b>"
                 )
                 if (
                     battery_percentage_left <= "100" or battery_percentage_left >= "85"
@@ -229,18 +232,18 @@ class MainWindow(Gtk.Window):
         self.connect("destroy", Gtk.main_quit)
 
     def toggle_individual_led(self, led_num):
-        with open(f"{player_leds_path}-{led_num}/brightness", "r+") as wr:
-            value = wr.readline().strip()
+        with open(f"{player_leds_path}-{led_num}/brightness", "r+") as led_file:
+            value = led_file.readline().strip()
             new_value = "1" if value == "0" else "0"
-            wr.write(new_value)
+            led_file.write(new_value)
 
     def enable_individual_led(self, led_num):
-        with open(f"{player_leds_path}-{led_num}/brightness", "w") as wr:
-            wr.write("1")
+        with open(f"{player_leds_path}-{led_num}/brightness", "w") as led_file:
+            led_file.write("1")
 
     def disable_individual_led(self, led_num):
-        with open(f"{player_leds_path}-{led_num}/brightness", "w") as wr:
-            wr.write("0")
+        with open(f"{player_leds_path}-{led_num}/brightness", "w") as led_file:
+            led_file.write("0")
 
     def open_color_picker(self, widget):  # Color picker for side LEDs
         win = tkinter.Tk()
@@ -248,9 +251,8 @@ class MainWindow(Gtk.Window):
         colorDialog = tkinter.colorchooser.Chooser()
         color = colorDialog.show()
         try:
-            red = int(
-                color[0][0]
-            )  # convert the floating point values to a whole number
+            # convert the floating point values to a whole number
+            red = int(color[0][0])
             green = int(color[0][1])
             blue = int(color[0][2])
         except TypeError:  # close dialog box if Cancel was clicked
@@ -260,9 +262,9 @@ class MainWindow(Gtk.Window):
             with open(
                 f"{rgb_leds_path}/multi_intensity",
                 "r+",
-            ) as wr:
-                wr.write(str(red) + " " + str(green) + " " + str(blue))
-            print("RGB set to " + str(red) + " " + str(green) + " " + str(blue))
+            ) as rbg_file:
+                rbg_file.write(f"{red} {green} {blue}")
+            print(f"RGB set to {red} {green} {blue}")
             win.destroy()
 
     def rgb_random_clicked(self, widget):
@@ -272,16 +274,9 @@ class MainWindow(Gtk.Window):
         with open(
             f"{rgb_leds_path}/multi_intensity",
             "r+",
-        ) as wr:
-            wr.write(f"{random_red} {random_green} {random_blue}")
-        print(
-            "RGB set to "
-            + str(random_red)
-            + " "
-            + str(random_green)
-            + " "
-            + str(random_blue)
-        )
+        ) as rbg_file:
+            rbg_file.write(f"{random_red} {random_green} {random_blue}")
+        print(f"RGB set to {random_red} {random_green} {random_blue}")
 
     def rgb_rainbow_clicked(self, widget):
         print("Running rainbow, press Enter any time to exit -> ")
@@ -290,8 +285,8 @@ class MainWindow(Gtk.Window):
         with open(
             f"{rgb_leds_path}/multi_intensity",
             "r+",
-        ) as wr:
-            wr.write("0 0 0")
+        ) as rbg_file:
+            rbg_file.write("0 0 0")
         max_rgb = 255
         min_rgb = 0
 
@@ -314,8 +309,8 @@ class MainWindow(Gtk.Window):
                 with open(
                     f"{rgb_leds_path}/multi_intensity",
                     "r+",
-                ) as wr:
-                    wr.write(str(red) + " " + str(green) + " " + str(blue))
+                ) as rbg_file:
+                    rbg_file.write(f"{red} {green} {blue}")
             while red > min_rgb and green > min_rgb and blue > min_rgb:  # die down
                 time.sleep(0.05)
                 red -= random_red_increment
@@ -324,8 +319,8 @@ class MainWindow(Gtk.Window):
                 with open(
                     f"{rgb_leds_path}/multi_intensity",
                     "r+",
-                ) as wr:
-                    wr.write(str(red) + " " + str(green) + " " + str(blue))
+                ) as rbg_file:
+                    rbg_file.write(f"{red} {green} {blue}")
             if (
                 sys.stdin in select.select([sys.stdin], [], [], 0)[0]
             ):  # exit if Enter is pressed
@@ -335,33 +330,33 @@ class MainWindow(Gtk.Window):
     # Side LED brightness
     def no_brightness_clicked(self, widget):
         brightness_off = 0
-        with open(f"{rgb_leds_path}/brightness", "r+") as wr:
-            wr.write(str(brightness_off))
-        print("Brightness set to " + str(brightness_off))
+        with open(f"{rgb_leds_path}/brightness", "r+") as brightness_file:
+            brightness_file.write(str(brightness_off))
+        print(f"Brightness set to {brightness_off}")
 
     def low_brightness_clicked(self, widget):
         low_brightness_value = 85
-        with open(f"{rgb_leds_path}/brightness", "r+") as wr:
-            wr.write(str(low_brightness_value))
-        print("Brightness set to " + str(low_brightness_value))
+        with open(f"{rgb_leds_path}/brightness", "r+") as brightness_file:
+            brightness_file.write(str(low_brightness_value))
+        print(f"Brightness set to {low_brightness_value}")
 
     def medium_brightness_clicked(self, widget):
         med_brightness_value = 170
-        with open(f"{rgb_leds_path}/brightness", "r+") as wr:
-            wr.write(str(med_brightness_value))
-        print("Brightness set to " + str(med_brightness_value))
+        with open(f"{rgb_leds_path}/brightness", "r+") as brightness_file:
+            brightness_file.write(str(med_brightness_value))
+        print(f"Brightness set to {med_brightness_value}")
 
     def max_brightness_clicked(self, widget):
         max_brightness_value = 255
-        with open(f"{rgb_leds_path}/brightness", "r+") as wr:
-            wr.write(str(max_brightness_value))
-        print("Brightness set to " + str(max_brightness_value))
+        with open(f"{rgb_leds_path}/brightness", "r+") as brightness_file:
+            brightness_file.write(str(max_brightness_value))
+        print(f"Brightness set to {max_brightness_value}")
 
     def choose_brightness_clicked(self, widget):
         def set_value():
-            with open(f"{rgb_leds_path}/brightness", "r+") as wr:
-                wr.write(str(brightness.get()))
-            print("Brightness set to " + str(brightness.get()))
+            with open(f"{rgb_leds_path}/brightness", "r+") as brightness_file:
+                brightness_file.write(str(brightness.get()))
+            print(f"Brightness set to {brightness.get()}")
             slider.destroy()
 
         def cancel():
@@ -372,8 +367,8 @@ class MainWindow(Gtk.Window):
         slider.geometry("300x100")
 
         # Retrieve brightness value from file and set this as the default in the slider
-        with open(f"{rgb_leds_path}/brightness", "r+") as wr:
-            value = wr.readline().strip()
+        with open(f"{rgb_leds_path}/brightness", "r+") as brightness_file:
+            value = brightness_file.readline().strip()
 
         brightness = tkinter.Scale(slider, from_=0, to=255, orient=tkinter.HORIZONTAL)
         brightness.set(value)
