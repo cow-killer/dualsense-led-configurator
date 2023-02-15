@@ -14,17 +14,31 @@ import tkinter.colorchooser  # need tkiner for now for color picker and RGB brig
 import subprocess  # for running Linux commands
 
 # find the path to the ps-controller-battery directory
-device_path = subprocess.check_output(
-    ["find", "/sys/devices/", "-name", "ps-controller-battery*"]
+device_paths = (
+    subprocess.check_output(
+        ["find", "/sys/devices/", "-name", "ps-controller-battery*"]
+    )
+    .decode()
+    .split("\n")[:-1]
 )
+num_controllers = len(device_paths)
+if num_controllers >= 2:
+    print("Multiple controllers detected. Please select the one you want to use:")
+    for i, path in enumerate(device_paths):
+        print(f"{i+1}.) {path[-17:]}")
+    selected = int(input(f"Select controller (1-{num_controllers}): ")) - 1
+    device_path = device_paths[selected]
+else:
+    device_path = device_paths[0]
+
 # extract the MAC address from the filepath
-mac_address = device_path.decode().split("/")[-1].split("-")[-1].strip()
+mac_address = device_path[-17:]
 # extract the main controller directory
-device_path = "/".join(device_path.decode().split("/")[0:-2])
+device_path = "/".join(device_path.split("/")[0:-2])
 
 # get the random number assigned to the controller
 input_num = subprocess.check_output(
-    ["find", "/sys/devices/", "-name", "input*:white:player-1"]
+    ["find", device_path, "-name", "input*:white:player-1"]
 )
 input_num = input_num.decode().split("/")[-1].split(":")[0][5:]
 
