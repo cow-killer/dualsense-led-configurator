@@ -1,5 +1,5 @@
-# DualSense LED Configurator 0.4
-# © 2021, 2022 cow_killer, thats-the-joke, ivanbratovic
+# DualSense LED Configurator 0.5
+# © 2021-2023 cow_killer (Linux Gaming Central), thats-the-joke, ivanbratovic
 
 import gi
 
@@ -54,7 +54,7 @@ full_battery = "assets/full_battery.png"
 medium_battery = "assets/medium_battery.png"
 low_battery = "assets/low_battery.png"
 
-version_number = "0.4"
+version_number = "0.5"
 
 # check to see if user has root privileges, if not exit
 if os.geteuid() != 0:
@@ -73,7 +73,7 @@ class AboutBox(Gtk.Dialog):
             f"<big><b>DualSense LED Configurator {version_number}</b></big>"
         )
         author = Gtk.Label()
-        author.set_markup("<big><b>© 2021, 2022 cow_killer</b></big>\n")
+        author.set_markup("<big><b>© 2021-2023 Linux Gaming Central</b></big>\n")
         source = Gtk.Label()
 
         warning = Gtk.Label()
